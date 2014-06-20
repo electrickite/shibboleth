@@ -1,0 +1,19 @@
+# Editor backup files
+*~
+.*.~*~
+.\#*
+*.~*~
+
+# OSX hidden files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows hidden files
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
