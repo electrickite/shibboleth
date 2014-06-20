@@ -269,5 +269,5 @@ University, [University Communications][5].
 [1]: https://shibboleth.net
 [2]: https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPProtectContent#NativeSPProtectContent-PassiveProtection
 [3]: https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPhtaccess#NativeSPhtaccess-GeneralSyntax
-[4]: https://github.com/osuInteractiveComm/shibboleth
+[4]: https://github.com/osucomm/shibboleth
 [5]: http://ucom.osu.edu
