@@ -1,23 +1,39 @@
-ShibProtect
-===========
+Shibboleth
+==========
 
-Adds Shibboleth protected resources to MODX Revolution. [Shibboleth][1] is an open-source project that provides single sign-on capabilities and allows sites to make informed authorization decisions for individual access of protected online resources in a privacy-preserving manner.
+Adds Shibboleth authentication to MODX Revolution. [Shibboleth][1] is an
+open-source project that provides single sign-on capabilities and allows sites
+to make informed authorization decisions for individual access to protected
+online resources in a privacy-preserving manner.
 
-Typically, a resource is protected by Shibboleth using web server directives that require a Shibboleth session. In addition to authentication, Shibboleth can restrict access to certain groups based on attributes provided by a user's Identity Provider (IdP). These directives are often placed in .htaccess files to protect different paths and directories in the web root.
+The Shibboleth add-on can be used to secure individual resources and to
+authenticate MODX user accounts with Shibboleth.
 
-Protecting MODX resources using this method can be difficult since they do not exist on the file system. ShibProtect allows resources to be protected by Shibboleth based on the value of a template variable.
+**Note:** Shibboleth replaces the deprecated ShibProtect add-on. Shibboleth
+contains the same content protection features as ShibProtect, but adds many
+additional capabilities.
 
 Requirements
 ------------
 
-You must have Shibboleth installed and properly configured on the web server hosting MODX to protect content with ShibProtect. This add-on was written for use with an Apache web server. For example, the syntax for specifying authorization rules is identical to the Shibboleth Apache directives. Other server configurations may work, but should be be well tested before being used in production.
+You must have Shibboleth installed and properly configured on the web server
+hosting MODX. This add-on was written for use with an Apache web server. For
+example, the syntax for specifying authorization rules is identical to the
+Shibboleth Apache directives. Other server configurations may work, but should
+be well tested before being used in production.
 
-Because Shibboleth provides very little security when used over unencrypted (HTTP) connections, only HTTPS URLs are supported by this extra. Your site must have SSL support.
+Because Shibboleth provides very little security when used over unencrypted
+(HTTP) connections, only HTTPS URLs are supported by this extra. Your site must
+have SSL support.
 
 Configure Shibboleth
 --------------------
 
-ShibProtect assumes that Shibboleth has been enabled in [passive or "lazy session" mode][2] for the root directory (containing index.php) of the MODX site. In a typical setup, the following directives should be added to the .htaccess file in the MODX root folder, after the RewriteBase directive.
+This add-on assumes that Shibboleth has been enabled in
+[passive or "lazy session" mode][2] for the root directory (containing
+index.php) of the MODX site. In a typical setup, the following directives should
+be added to the .htaccess file in the MODX root folder, after the RewriteBase
+directive.
 
     # Skip Shibboleth URLs. May be necessary, depending on server configuration
     # Replace "Shibboleth.sso" with the session initiator URL for your server
@@ -28,86 +44,230 @@ ShibProtect assumes that Shibboleth has been enabled in [passive or "lazy sessio
     ShibRequestSetting requireSession false
     Require shibboleth
 
-Note that these settings will not protect any files or resources present in the file system. For access controlled downloads, appropriate Shibboleth directives will need to be placed in the .htaccess file for the directory that contains the files to be protected.
+Note that these settings will not protect any files or resources present in the
+file system. For access controlled downloads, appropriate Shibboleth directives
+will need to be placed in the .htaccess file for the directory that contains the
+files to be protected.
 
 Protect MODX Resources
 ----------------------
 
-To protect pages, create a template variable that will be used to designate the resource as protected by Shibboleth. Make sure it has a 1/0 or true/false value. Finally, add the TV to a template and set the `shibprotect.tv` system setting to the TV name. Any resources with the TV set will trigger the ShibbolethProtectPages plugin.
+Typically, a resource is protected by Shibboleth using web server directives
+that require a Shibboleth session. In addition to authentication, Shibboleth can
+restrict access to certain groups based on attributes provided by a user's
+Identity Provider (IdP). These directives are often placed in .htaccess files to
+protect different paths and directories in the web root.
 
-Authentication and Authorization
---------------------------------
+Protecting MODX resources using this method can be difficult since they do not
+exist on the file system. This add-on allows resources to be protected by
+Shibboleth based on the value of a template variable.
 
-When handling requests for protected resources, MODX will first check that the user has an active Shibboleth session. If they do not, they will be redirected to your server's Login handler. From there, depending on your Shibboleth environment, they will likely be redirected to a web-based sign on page. Following a succesful authentication attempt, the will eventually be directed back to their original destination on your site.
+To protect pages, create a template variable that will be used to designate the
+resource as protected by Shibboleth. Make sure it has a 1/0 or true/false value.
+Finally, add the TV to a template and set the `shibboleth.tv` system setting to
+the TV name. Any resources with the TV set will trigger the ShibbolethProtect
+plugin.
 
-After authentication, ShibProtect can also check that a user is authorized to view protected content. Authorization rules can be configured in the `shibprotect.rules` system setting, one per line. The rules should be entered using the 'shib-attr' [Apache syntax][3]. The attributes available will vary based on the user's IdP: contact you IdP administrator for details on the types of information provided with each user session. (One way to get an idea of the attributes in your environment is to dump the `$_SERVER` variable of an active Shib session)
+### Authentication and Authorization ###
+
+When handling requests for protected resources, MODX will first check that the
+user has an active Shibboleth session. If they do not, they will be redirected
+to your server's Login handler. From there, depending on your Shibboleth
+environment, they will likely be sent to a web-based sign on page. Following a
+succesful authentication attempt, they will eventually be directed back to their
+original destination on your site.
+
+After authentication, Shibboleth can also check that a user is authorized to
+view protected content. Authorization rules can be configured in the
+`shibboleth.rules` system setting, one per line. The rules should be entered
+using the 'shib-attr' [Apache syntax][3]. The attributes available will vary
+based on the user's IdP: contact you IdP administrator for details on the types
+of information provided with each user session. (One way to get an idea of the
+attributes in your environment is to dump the `$_SERVER` variable of an active
+Shib session)
 
 An example rule set might look something like this:
 
     Require shib-attr username person.123@example.com person.456@example.com
     Require shib-attr affiliation employee contractor
 
-Which would allow a user whose Shibboleth username attribute was either "person.123@example.com" or "person.456@example.com" to access protected resources. It would _also_ grant access to a user whose affiliation was "employee" or "contractor". Note that rule conditions are evaluated using OR relationships: a user who matches any attribute in any rule is considered authorized.
+Which would allow a user whose Shibboleth username attribute was either
+"person.123@example.com" or "person.456@example.com" to access protected
+resources. It would _also_ grant access to a user whose affiliation was
+"employee" or "contractor". Note that rule conditions are evaluated using OR
+relationships: a user who matches any attribute in any rule is considered
+authorized.
 
-Authorization rules can also be read from a file by placing its absolute file system path in `shibprotect.rules_file`. The rules file can be a .htaccess file. This arrangement could potentially be used to secure a directory of files and a set of MODX web pages with the same set of directives.
+Authorization rules can also be read from a file by placing its absolute file
+system path in `shibboleth.rules_file`. The rules file can be a .htaccess file.
+This arrangement could potentially be used to secure a directory of files and a
+set of MODX web pages with the same set of directives.
+
+Authenticate MODX Users
+-----------------------
+
+In addition to securing front-end content, MODX user accounts can be
+authenticated with Shibboleth. This allows manager users to log in with
+credentials supplied by their IdP. 
+
+### Set Up ###
+
+In order to authenticate MODX users, you must create a Shibboleth handler
+resource to process the login requests.
+
+  1. Create a new document in a context accessible by anonymous users (typically
+     the 'web' context)
+  2. Assign the resource an empty template and check "Hide from menus" and
+     "Published"
+  3. In the content area, call the shibHandler snippet: `[[!shibHandler]]`
+  4. Enter the resource ID of the new handler document in the
+     `shibboleth.handler` setting
+
+Make sure this resource remains published and accessible. If it is removed, it
+may prevent users from logging in! You might consider adding it to a protected
+resource group to prevent accidental alterations.
+
+### Logging In ###
+
+Users should see a 'Shibboleth Login' link on the manager login form. Cicking
+this link will direct them to the handler reosurce created earlier. From there,
+they will either be logged in if they already have a Shibboleth session, or sent
+to the identity provider if they do not.
+
+MODX will compare the username provided by Shibboleth against user accounts in
+its database. If the username matches, that user will be logged in. If no MDOX
+user is found, a new user account will be created if `shibboleth.create_users`
+is set to Yes.
+
+If MODX usernames are stored in a different format that those supplied by
+Shibboleth, you can run them through the snippet configured in
+`shibboleth.transform_snippet` to transform the Shibboleth username. For
+example, if Shibboleth supplied usernames in the format `DOMAIN\user` but MODX
+accounts use only `username`, you could use this snippet to match the two:
+
+    return str_replace('DOMAIN\\', '', $username);
+
+### Group synchronization ###
+
+The groups and roles for a MODX user can optionally be synchroized with
+attributes provided by Shibboleth. The mapping between MODX groups and
+Shibboleth attributes is configured using the `shibboleth.group_rules` setting,
+one rule per line. A group mapping rule has the following format:
+
+    GroupName RoleName attribute value1 value2 value3 ...
+
+A Shibboleth user with any of the attribute values will be assigned to the group
+with the specified role. For example, with the rule:
+
+    Administrator "Super User" affiliation employee manager
+
+A user who has the "manager" or "employee" affiliation will be added to the
+Administrator group with the Super User role. Conversely, if a user does not
+have the employee or manager affiliation, they will be removed from the
+Administrator group.
 
 System Settings
 ---------------
 
-ShibProtect is configured using a number of system settings.
+Shibboleth is configured using a number of system settings.
 
-  * shibprotect.tv: Name of the TV used to designate a protected resource
-  * shibprotect.username_attribute: The Shibboleth attribute that contains a
-    user's unique account name. This should be an environment varibale that is
-    only set when a Shibboleth session is active.
-  * shibprotect.rules: Authorization rules, one per line, in Apache syntax
-  * shibprotect.rules_file: absolute file system path to a file containing
-    authorization rules
-  * shibprotect.login_path: The relative URL for the server's Shibboleth login
-    handler
-  * shibprotect.fixenv: Attempt to fix Apache mod_rewrite prepending 'REDIRECT_'
+### Environment ###
+
+  * shibboleth.session_indicator: Environment variable that indicates the
+    presence of a Shibboleth session. Typically Shib-Session-ID
+  * shibboleth.username_attribute: The Shibboleth attribute that contains a
+    user's unique account name.
+  * shibboleth.email_attribute: The Shibboleth attribute that contains a
+    user's email address.
+  * shibboleth.fullname_attribute: The Shibboleth attribute that contains a
+    user's display name.
+  * shibboleth.login_path: The relative URL for the server's Shibboleth login
+    handler. Note that this is the server login handler not the MODX handler
+    resource
+  * shibboleth.fixenv: Attempt to fix Apache mod_rewrite prepending 'REDIRECT_'
     to variable names
-  * shibprotect.session_indicator: Environment variable that indicates the
-    presence of a Shibboleth session
+
+### Content Protection ###
+
+  * shibboleth.tv: Name of the TV used to designate a protected resource
+  * shibboleth.rules: Authorization rules, one per line, in Apache syntax
+  * shibboleth.rules_file: absolute file system path to a file containing
+    authorization rules
+
+### User login ###
+
+  * shibboleth.force_ssl: Force URLs to use the HTTPS scheme for SSL
+    encryption. WARNING: Do not turn off this setting unless you understand the
+    implications. Shibboleth offers very little security without using SSL.
+  * shibboleth.login_text: Text for the Shibboleth link on the manager login
+    form
+
+### Miscelaneous ###
+
+  * shibboleth.allow_auth: Allow MODX users to authenticate with Shibboleth
+  * shibboleth.force_shib: Force MODX users to authenticate with Shibboleth.
+    Prevents normal MODX password login. This could lock users out of the site
+    if the IdP is unavailable
+  * shibboleth.handler: ID of the resource containing the Shibboleth handler
+    snippet
+  * shibboleth.create_users: Create MODX user accounts for Shibboleth users
+  * shibboleth.group_rules: Group mapping rules, one per line.
+    `GroupName RoleName attribute value1 value2 value3 ...`
+  * shibboleth.transform_snippet: Name of the username transform snippet  
 
 Helper Snippets
 ---------------
 
-ShibProtect provides several convenience snippets that can be used to gather information from the Shibboleth session.
+Several convenience snippets are provided that can be used to gather information
+from the Shibboleth session.
 
 ###ShibAuth
 
-Tests whether the current user is authorized to view protected resources. Will return '1' if the user is authorized and '0' if not. The snippet can be used in any resource.
+Tests whether the current user is authorized to view protected resources. Will
+return '1' if the user is authorized and '0' if not. The snippet can be used in
+any resource.
 
     [[!shibAuth:is=`0`:then=`class=“content-is-locked"`]]
 
+###ShibAttr
+
+Returns the value of the Shibboleth attribute specified in the `attribute`
+property for the currently authenticated user. 
+
+    [[!shibAttr? &attribute=`email`]]
+
 ###ShibLoginUrl
 
-Returns the Shibboleth login handler URL for the current resource. Can also redirect to an artibtrary URL by passing a `target` property.
+Returns the Shibboleth login URL for the current resource. Can also redirect to
+an artibtrary URL by passing a `target` property.
 
     [[!shibLoginUrl]]
     [[!shibLoginUrl? &target=`http://www.example.com`]]
 
-###ShibAttr
+###ShibHandlerUrl
 
-Returns the value of the Shibboleth attribute specified in the `attribute` property for the currently authenticated user. 
+Returns the MODX Shibboleth handler URL. Set the destination context and URL in
+the `context` and `target` properties.
 
-    [[!shibAttr? &attribute=`email`]]
+    [[!shibHandlerUrl? &context=`mgr` &target=`/manager/`]]
+
 
 Contributing
 ------------
 
-ShibProtect is [hosted on GitHub][4]. Ideas for improvements? Bug reports? Please open an issue in the project's issue queue.
+The MODX Shibboleth extra is [hosted on GitHub][4]. Ideas for improvements? Bug
+reports? Please open an issue in the project's issue queue.
 
 Author
 ------
 
-ShibProtect is written and maintained by Corey Hinshaw <hinshaw.25@osu.edu> for the Ohio State University, [University Communications][5]. 
+Written and maintained by Corey Hinshaw <hinshaw.25@osu.edu> for the Ohio State
+University, [University Communications][5]. 
 
 
 
 [1]: https://shibboleth.net
 [2]: https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPProtectContent#NativeSPProtectContent-PassiveProtection
 [3]: https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPhtaccess#NativeSPhtaccess-GeneralSyntax
-[4]: https://github.com/osuInteractiveComm/shibprotect
+[4]: https://github.com/osuInteractiveComm/shibboleth
 [5]: http://ucom.osu.edu
