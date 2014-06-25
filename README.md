@@ -74,7 +74,7 @@ When handling requests for protected resources, MODX will first check that the
 user has an active Shibboleth session. If they do not, they will be redirected
 to your server's Login handler. From there, depending on your Shibboleth
 environment, they will likely be sent to a web-based sign on page. Following a
-succesful authentication attempt, they will eventually be directed back to their
+successful authentication attempt, they will eventually be directed back to their
 original destination on your site.
 
 After authentication, Shibboleth can also check that a user is authorized to
@@ -142,7 +142,7 @@ resource group to prevent accidental alterations.
 
 ### Logging In ###
 
-Users should see a 'Shibboleth Login' link on the manager login form. Cicking
+Users should see a 'Shibboleth Login' link on the manager login form. Clicking
 this link will direct them to the handler created earlier. From there, they will
 either be logged in if they already have a Shibboleth session, or sent to the
 identity provider if they do not.
@@ -162,7 +162,7 @@ accounts use only `username`, you could use this snippet to match the two:
 
 ### Group synchronization ###
 
-The groups and roles for a MODX user can optionally be synchroized with
+The groups and roles for a MODX user can optionally be synchronized with
 attributes provided by Shibboleth. The mapping between MODX groups and
 Shibboleth attributes is configured using the `shibboleth.group_rules` setting,
 one rule per line. A group mapping rule has the following format:
