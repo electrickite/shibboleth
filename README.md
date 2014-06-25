@@ -7,7 +7,7 @@ to make informed authorization decisions for individual access to protected
 online resources in a privacy-preserving manner.
 
 The Shibboleth add-on can be used to secure individual resources and to
-authenticate MODX user accounts with Shibboleth.
+authenticate MODX user accounts.
 
 **Note:** Shibboleth replaces the deprecated ShibProtect add-on. Shibboleth
 contains the same content protection features as ShibProtect, but adds many
@@ -18,9 +18,9 @@ Requirements
 
 You must have Shibboleth installed and properly configured on the web server
 hosting MODX. This add-on was written for use with an Apache web server. For
-example, the syntax for specifying authorization rules is identical to the
-Shibboleth Apache directives. Other server configurations may work, but should
-be well tested before being used in production.
+example, the syntax for specifying content authorization rules is identical to
+the Shibboleth Apache directives. Other server configurations may work, but
+should be well tested before being used in production.
 
 Because Shibboleth provides very little security when used over unencrypted
 (HTTP) connections, only HTTPS URLs are supported by this extra. Your site must
@@ -82,7 +82,7 @@ view protected content. Authorization rules can be configured in the
 `shibboleth.rules` system setting, one per line. The rules should be entered
 using the 'shib-attr' [Apache syntax][3]. The attributes available will vary
 based on the user's IdP: contact you IdP administrator for details on the types
-of information provided with each user session. (One way to get an idea of the
+of information provided with each user. (One way to get an idea of the
 attributes in your environment is to dump the `$_SERVER` variable of an active
 Shib session)
 
@@ -112,8 +112,11 @@ credentials supplied by their IdP.
 
 ### Set Up ###
 
-In order to authenticate MODX users, you must create a Shibboleth handler
-resource to process the login requests.
+In order to authenticate MODX users, you must create a Shibboleth handler to
+process the login requests. The handler can be either a MODX resource or a PHP
+script.
+
+#### Handler Resource ####
 
   1. Create a new document in a context accessible by anonymous users (typically
      the 'web' context)
@@ -121,18 +124,28 @@ resource to process the login requests.
      "Published"
   3. In the content area, call the shibHandler snippet: `[[!shibHandler]]`
   4. Enter the resource ID of the new handler document in the
-     `shibboleth.handler` setting
+     `shibboleth.handler` system setting
 
-Make sure this resource remains published and accessible. If it is removed, it
-may prevent users from logging in! You might consider adding it to a protected
+Make sure this resource remains published and accessible. If removed, it may
+prevent users from logging in! You might consider adding it to a protected
 resource group to prevent accidental alterations.
+
+#### Handler Script ####
+
+  1. Locate the example handler script in
+     `core/components/shibboleth/example/handler.php.example`.
+  2. Copy the example script to a location in your MODX web root. For example:
+     `http://example.com/shibboleth.php`.
+  3. If the script is not located in the same directory as `config.core.php`,
+     uncomment and set the `$config_path` variable to the absolute file system
+     path of a `config.core.php` file.
 
 ### Logging In ###
 
 Users should see a 'Shibboleth Login' link on the manager login form. Cicking
-this link will direct them to the handler reosurce created earlier. From there,
-they will either be logged in if they already have a Shibboleth session, or sent
-to the identity provider if they do not.
+this link will direct them to the handler created earlier. From there, they will
+either be logged in if they already have a Shibboleth session, or sent to the
+identity provider if they do not.
 
 MODX will compare the username provided by Shibboleth against user accounts in
 its database. If the username matches, that user will be logged in. If no MDOX
@@ -183,7 +196,7 @@ Shibboleth is configured using a number of system settings.
     user's display name.
   * shibboleth.login_path: The relative URL for the server's Shibboleth login
     handler. Note that this is the server login handler not the MODX handler
-    resource
+    resource/script. Typically /Shibboleth.sso/Login
   * shibboleth.fixenv: Attempt to fix Apache mod_rewrite prepending 'REDIRECT_'
     to variable names
 
@@ -196,30 +209,30 @@ Shibboleth is configured using a number of system settings.
 
 ### User login ###
 
+  * shibboleth.allow_auth: Allow MODX users to authenticate with Shibboleth
+  * shibboleth.force_shib: Force MODX users to authenticate with Shibboleth.
+    Prevents normal MODX password login. This could lock users out of the site
+    if the IdP is unavailable
+  * shibboleth.handler: ID of the resource containing the Shibboleth handler
+    snippet or the full URL of the handler script
+  * shibboleth.create_users: Create MODX user accounts for Shibboleth users
+  * shibboleth.group_rules: Group mapping rules, one per line.
+    `GroupName RoleName attribute value1 value2 value3 ...`
+  * shibboleth.transform_snippet: Name of the username transform snippet
+
+### Miscelaneous ###
+
   * shibboleth.force_ssl: Force URLs to use the HTTPS scheme for SSL
     encryption. WARNING: Do not turn off this setting unless you understand the
     implications. Shibboleth offers very little security without using SSL.
   * shibboleth.login_text: Text for the Shibboleth link on the manager login
     form
 
-### Miscelaneous ###
-
-  * shibboleth.allow_auth: Allow MODX users to authenticate with Shibboleth
-  * shibboleth.force_shib: Force MODX users to authenticate with Shibboleth.
-    Prevents normal MODX password login. This could lock users out of the site
-    if the IdP is unavailable
-  * shibboleth.handler: ID of the resource containing the Shibboleth handler
-    snippet
-  * shibboleth.create_users: Create MODX user accounts for Shibboleth users
-  * shibboleth.group_rules: Group mapping rules, one per line.
-    `GroupName RoleName attribute value1 value2 value3 ...`
-  * shibboleth.transform_snippet: Name of the username transform snippet  
-
 Helper Snippets
 ---------------
 
-Several convenience snippets are provided that can be used to gather information
-from the Shibboleth session.
+Several convenience snippets can be used to gather information from the
+Shibboleth session.
 
 ###ShibAuth
 

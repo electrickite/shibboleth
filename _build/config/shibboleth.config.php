@@ -16,11 +16,11 @@ $components = array(
     'packageName' => 'Shibboleth',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'Add Shibboleth authentication to MODX Revolution',
-    'version' => '1.0.0',
+    'version' => '0.1.0',
     'release' => 'pl',
     'author' => 'Corey Hinshaw',
     'email' => 'hinshaw.25@osu.edu',
-    'packageDocumentationUrl' => 'https://github.com/osuInteractiveComm/shibboleth',
+    'packageDocumentationUrl' => 'https://github.com/osucomm/shibboleth',
     'copyright' => '2014',
 
     /* no need to edit this except to change format */
@@ -239,7 +239,7 @@ $components = array(
           'namespace' => 'shibboleth',
           'area' => 'User Login',
           'name' => 'Shibboleth handler',
-          'description' => 'The resource ID of the Shibboleth login handler document',
+          'description' => 'ID of the resource containing the Shibboleth handler snippet or the full URL of the handler script',
         ),
         'shibboleth.create_users' => array(
           'key' => 'shibboleth.create_users',

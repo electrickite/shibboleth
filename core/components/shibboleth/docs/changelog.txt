@@ -1,5 +1,6 @@
 Changelog for Shibboleth
 
-Shibboleth 1.0.0
+Shibboleth 0.1.0
 ---------------------------------
-Initial Version
+ * Initial Version
+ * Replaces shibProtect add-on

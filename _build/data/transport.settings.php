@@ -180,7 +180,7 @@ $systemSettings[16]->fromArray(array (
   'namespace' => 'shibboleth',
   'area' => 'User Login',
   'name' => 'Shibboleth handler',
-  'description' => 'The resource ID of the Shibboleth login handler document',
+  'description' => 'ID of the resource containing the Shibboleth handler snippet or the full URL of the handler script',
 ), '', true, true);
 $systemSettings[17] = $modx->newObject('modSystemSetting');
 $systemSettings[17]->fromArray(array (

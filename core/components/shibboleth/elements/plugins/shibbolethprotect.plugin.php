@@ -23,23 +23,21 @@ $corePath = $modx->getObject('modNamespace', 'shibboleth')->getCorePath();
 require_once $corePath.'model/shibboleth.class.php';
 
 $event = $modx->event->name;
-$user = new ShibbolethUser($modx);
+$handler = new ShibbolethHandler($modx);
 $tv = $modx->getOption('shibboleth.tv', $scriptProperties);
 
 
-if ($event == 'OnHandleRequest' && $modx->getOption('shibboleth.fixenv',null,true)) {
+if ($event == 'OnHandleRequest') {
     // Fix Apache redirected environment variable names
-    foreach ($_SERVER as $key => $value)
-        if (substr_compare($key, "REDIRECT_", 0, 9) == 0)
-            $_SERVER[preg_replace('/REDIRECT_/', '', $key)] = $value;
+    $handler->fixEnvironment();
 
 } elseif ($event == 'OnWebPagePrerender' && (bool)$modx->resource->getTVValue($tv)) {
     // Protect selected resources with Shibboleth authentication    
-    if ( ! $user->isAuthenticated()) {
+    if ( ! $handler->shibUser()->isAuthenticated()) {
         // If the user is not authenticated, send them to the login service
-        $user->authenticate();
+        $handler->authenticate();
     } else {
-        if ( ! $user->isAuthorized()) $modx->sendUnauthorizedPage();
+        if ( ! $handler->shibUser()->isAuthorized()) $modx->sendUnauthorizedPage();
     }
 
 } elseif ($event == 'OnManagerLoginFormPrerender' && $modx->getOption('shibboleth.allow_auth', $scriptProperties, true)) {
@@ -51,7 +49,7 @@ if ($event == 'OnHandleRequest' && $modx->getOption('shibboleth.fixenv',null,tru
 
 } elseif ($event == 'OnManagerLoginFormRender' && $modx->getOption('shibboleth.allow_auth', $scriptProperties, true)) {
     // Add the Shibboleth login link to the manager login form
-    $url = $user->modxHandlerUrl('mgr', MODX_MANAGER_URL);
+    $url = $handler->modxHandlerUrl('mgr', MODX_MANAGER_URL);
     $text = $modx->getOption('shibboleth.login_text', $scriptProperties, 'Shibboleth Login');
 
     $html = '<br class="clear" />

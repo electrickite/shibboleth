@@ -14,9 +14,9 @@
  */
 $corePath = $modx->getObject('modNamespace', 'shibboleth')->getCorePath();
 require_once $corePath.'model/shibboleth.class.php';
-$user = new ShibbolethUser($modx);
+$handler = new ShibbolethHandler($modx);
 
 $target = $modx->getOption('target', $scriptProperties);
 $context = $modx->getOption('context', $scriptProperties, $modx->context->get('key'));
 
-return $user->modxHandlerUrl($context, $target);
+return $handler->modxHandlerUrl($context, $target);

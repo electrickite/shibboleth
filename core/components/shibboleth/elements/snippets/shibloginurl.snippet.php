@@ -18,6 +18,6 @@ $target = $modx->getOption('target', $scriptProperties);
 $corePath = $modx->getObject('modNamespace', 'shibboleth')->getCorePath();
 require_once $corePath.'model/shibboleth.class.php';
 
-$user = new ShibbolethUser($modx);
+$handler = new ShibbolethHandler($modx);
 
-return $user->loginUrl($target);
+return $handler->loginUrl($target);
