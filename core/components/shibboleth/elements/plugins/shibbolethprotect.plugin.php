@@ -20,7 +20,7 @@
  **/
 
 $corePath = $modx->getObject('modNamespace', 'shibboleth')->getCorePath();
-require_once $corePath.'model/shibboleth.class.php';
+require_once $corePath.'autoload.php';
 $modx->lexicon->load('shibboleth:default');
 
 $event = $modx->event->name;

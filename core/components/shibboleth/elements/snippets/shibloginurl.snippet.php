@@ -16,7 +16,7 @@
 $target = $modx->getOption('target', $scriptProperties);
 
 $corePath = $modx->getObject('modNamespace', 'shibboleth')->getCorePath();
-require_once $corePath.'model/shibboleth.class.php';
+require_once $corePath.'autoload.php';
 
 $handler = new ShibbolethHandler($modx);
 

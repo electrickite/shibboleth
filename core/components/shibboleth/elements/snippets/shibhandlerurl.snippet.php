@@ -13,7 +13,7 @@
  *   after authentication
  */
 $corePath = $modx->getObject('modNamespace', 'shibboleth')->getCorePath();
-require_once $corePath.'model/shibboleth.class.php';
+require_once $corePath.'autoload.php';
 $handler = new ShibbolethHandler($modx);
 
 $target = $modx->getOption('target', $scriptProperties);
