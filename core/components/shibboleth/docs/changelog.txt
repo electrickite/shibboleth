@@ -4,6 +4,7 @@ Shibboleth 0.2.0
 ---------------------------------
  * Added option to enforce Shibboleth sessions
  * Added automatic redirect when Shibboleth is forced
+ * Bug fixes
 
 
 Shibboleth 0.1.0

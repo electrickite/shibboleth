@@ -98,6 +98,7 @@ elseif ($event == 'OnManagerPageInit') {
 
     if ($handler->getModxShibSession()) {
         $logout_message = $modx->lexicon('shibboleth.logout_message');
+        $show = $modx->getOption('shibboleth.force_shib', $scriptProperties, false) ? '?show_login' : null;
 
         $modx->regClientStartupHTMLBlock('
             <script type="text/javascript">
@@ -107,7 +108,7 @@ elseif ($event == 'OnManagerPageInit') {
                     MODx.lang.logout_confirm = "'.$logout_message.'"+" "+message;
                 });
                 MODx.on("afterLogout", function() {
-                    location.href = "./?show_login";
+                    location.href = "./'.$show.'";
                     return false;
                 });
             });

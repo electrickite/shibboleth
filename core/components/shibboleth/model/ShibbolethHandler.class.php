@@ -125,6 +125,7 @@ class ShibbolethHandler extends ShibbolethBase  {
             && $this->modx->getOption('shibboleth.enforce_session', $this->scriptProperties, false)
         ) {
             $this->modx->user->removeSessionContext($this->modx->context->get('key'));
+            $this->modx->sendRedirect($_SERVER['REQUEST_URI']);
         }
     }
 
@@ -152,10 +153,11 @@ class ShibbolethHandler extends ShibbolethBase  {
      */
     public function modxHandlerUrl($context, $target=null)
     {
+        $target = $this->buildTarget($target);
         $handler = $this->modx->getOption('shibboleth.handler', $this->scriptProperties);
         if (is_numeric($handler)) {
             $secure = str_replace('://', '', $this->scheme);
-            return $this->modx->makeUrl(intval($handler), '', array('ctx' => $context, 'target' => $this->buildTarget($target)), $secure);
+            return $this->modx->makeUrl(intval($handler), '', array('ctx' => $context, 'target' => $target), $secure);
         } else {
             $separator = parse_url($url, PHP_URL_QUERY) ? '&' : '?';
             return sprintf('%s%sctx=%s&target=%s', $handler, $separator, $context, $target);
