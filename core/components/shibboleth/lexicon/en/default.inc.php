@@ -19,6 +19,15 @@
  **/
 
 
+$_lang['shibboleth.logout_message'] = 'To finish logging out, you must close your web browser.';
+$_lang['shibboleth.force_shib_message'] = 'You must log in using Shibboleth.';
+$_lang['shibboleth.no_account_message'] = 'That account could not be located. You may not have permission to access this resource.';
+
+$_lang['area_user_login'] = 'User Login';
+$_lang['area_env'] = 'Environment';
+$_lang['area_content_protection'] = 'Content Protection';
+$_lang['area_misc'] = 'Miscellaneous';
+
 
 /* Used in transport.settings.php */
 $_lang['setting_shibboleth.rules'] = 'Shibboleth Authorization Rules';
@@ -55,3 +64,5 @@ $_lang['setting_shibboleth.handler'] = 'Shibboleth handler';
 $_lang['setting_shibboleth.handler_desc'] = 'The resource ID of the Shibboleth login handler document';
 $_lang['setting_shibboleth.create_users'] = 'Create MODX users';
 $_lang['setting_shibboleth.create_users_desc'] = 'Create MODX user accounts for Shibboleth users.';
+$_lang['setting_shibboleth.enforce_session'] = 'Enforce Shibboleth session';
+$_lang['setting_shibboleth.enforce_session_desc'] = 'Logs out a MODX user that was authenticated with Shibboleth if their Shibboleth session ends.';

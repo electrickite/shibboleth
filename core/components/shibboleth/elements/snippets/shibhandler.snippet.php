@@ -13,6 +13,7 @@
  */
 $corePath = $modx->getObject('modNamespace', 'shibboleth')->getCorePath();
 require_once $corePath.'model/shibboleth.class.php';
+$modx->lexicon->load('shibboleth:default');
 
 $handler = new ShibbolethHandler($modx);
 $handler->doLogin();

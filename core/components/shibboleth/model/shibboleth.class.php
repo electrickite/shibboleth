@@ -19,8 +19,8 @@ class ShibbolethUser extends ShibbolethBase {
      */
     public function isAuthenticated()
     {
-        $attr = $this->modx->getOption('shibboleth.session_indicator', $this->scriptProperties, 'Shib-Session-ID');
-        return isset($_SERVER[$attr]) && $_SERVER[$attr] != '';
+        $id = $this->sessionId();
+        return !empty($id);
     }
 
     /**
@@ -34,6 +34,17 @@ class ShibbolethUser extends ShibbolethBase {
     public function getAttribute($attribute)
     {
         return isset($_SERVER[$attribute]) ? $_SERVER[$attribute] : null;
+    }
+
+    /**
+     * Returns the Shibboleth session ID
+     *
+     * @return string
+     *   The session ID
+     */
+    public function sessionId()
+    {
+        return $this->getAttribute($this->modx->getOption('shibboleth.session_indicator', $this->scriptProperties, 'Shib-Session-ID'));
     }
 
     /**
@@ -190,7 +201,7 @@ class ShibbolethHandler extends ShibbolethBase  {
 
 
     /**
-     * Constructor for a ShibbolethUser object.
+     * Constructor for a ShibbolethHandler object.
      *
      * @param Modx $modx
      *   The Modx object
@@ -279,10 +290,32 @@ class ShibbolethHandler extends ShibbolethBase  {
         }
 
         if (!$this->modx->user->isAuthenticated($context)) {
-            $_SESSION['shibboleth_error'] = 'That account could not be located. You may not have permission to access this resource.';
+            $this->setError($this->modx->lexicon('shibboleth.no_account_message'));
         }
 
         $this->modx->sendRedirect($target);
+    }
+
+    public function enforceShibSession() {
+        if ($this->modx->user
+            && $this->getModxShibSession()
+            && $this->shibUser->sessionId() != $this->getModxShibSession()
+            && $this->modx->getOption('shibboleth.enforce_session', $this->scriptProperties, false)
+        ) {
+            $this->modx->user->removeSessionContext($this->modx->context->get('key'));
+        }
+    }
+
+    /**
+     * Checks that this MODX session was authenticated with Shibboleth
+     *
+     * @return string
+     *   The Shibboleth session ID that was used to start the MODX sesson or
+     *   null if the session was not started using Shibboleth
+     */
+    public function getModxShibSession()
+    {
+        return isset($_SESSION['shibboleth_session']) ? $_SESSION['shibboleth_session'] : null;
     }
 
     /**
@@ -318,6 +351,28 @@ class ShibbolethHandler extends ShibbolethBase  {
                 if (substr_compare($key, "REDIRECT_", 0, 9) == 0)
                     $_SERVER[preg_replace('/REDIRECT_/', '', $key)] = $value;
         }
+    }
+
+    /**
+     * Retrieves Shibboleth errors stored in the user session
+     *
+     * @return string
+     *   The Shibboleth error
+     */
+    public function getError()
+    {
+        return isset($_SESSION['shibboleth_error']) ? $_SESSION['shibboleth_error'] : null;
+    }
+
+    /**
+     * Store an error message in the user session
+     *
+     * @param string $message
+     *   The error message
+     */
+    public function setError($message=null)
+    {
+        $_SESSION['shibboleth_error'] = $message;
     }
 
 
@@ -415,6 +470,9 @@ class ShibbolethHandler extends ShibbolethBase  {
         if (!$this->modx->user->hasSessionContext($context)) {
             $this->modx->user->addSessionContext($context);
         }
+
+        // Flag this MODX session as a Shibboleth session
+        $this->setModxShibSession($this->shibUser->sessionId());
     }
 
     /**
@@ -423,6 +481,17 @@ class ShibbolethHandler extends ShibbolethBase  {
     protected function requiresUser()
     {
         if (!$this->modx->user) throw new RuntimeException('MODX user not set');
+    }
+
+    /**
+     * Store the Shibboleth session ID in the MODx user session
+     *
+     * @param string $sessionId
+     *   The Shibboleth session ID
+     */
+    protected function setModxShibSession($sessionId)
+    {
+        $_SESSION['shibboleth_session'] = $sessionId;
     }
 
     /**

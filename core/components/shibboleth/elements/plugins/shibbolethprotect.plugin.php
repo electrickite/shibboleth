@@ -21,17 +21,21 @@
 
 $corePath = $modx->getObject('modNamespace', 'shibboleth')->getCorePath();
 require_once $corePath.'model/shibboleth.class.php';
+$modx->lexicon->load('shibboleth:default');
 
 $event = $modx->event->name;
 $handler = new ShibbolethHandler($modx);
 $tv = $modx->getOption('shibboleth.tv', $scriptProperties);
 
-
 if ($event == 'OnHandleRequest') {
     // Fix Apache redirected environment variable names
     $handler->fixEnvironment();
 
-} elseif ($event == 'OnWebPagePrerender' && (bool)$modx->resource->getTVValue($tv)) {
+    // Remove the MODX session if no shibboleth session is present
+    $handler->enforceShibSession();
+}
+
+elseif ($event == 'OnWebPagePrerender' && (bool)$modx->resource->getTVValue($tv)) {
     // Protect selected resources with Shibboleth authentication    
     if ( ! $handler->shibUser()->isAuthenticated()) {
         // If the user is not authenticated, send them to the login service
@@ -39,15 +43,22 @@ if ($event == 'OnHandleRequest') {
     } else {
         if ( ! $handler->shibUser()->isAuthorized()) $modx->sendUnauthorizedPage();
     }
+}
 
-} elseif ($event == 'OnManagerLoginFormPrerender' && $modx->getOption('shibboleth.allow_auth', $scriptProperties, true)) {
+elseif ($event == 'OnManagerLoginFormPrerender' && $modx->getOption('shibboleth.allow_auth', $scriptProperties, true)) {
     // Display error messages stored in the user session
-    if (isset($_SESSION['shibboleth_error'])) {
-        $modx->smarty->assign('error_message', $_SESSION['shibboleth_error']);
-        unset($_SESSION['shibboleth_error']);
+    if ($handler->getError()) {
+        $modx->smarty->assign('error_message', $handler->getError());
+        $handler->setError();
     }
 
-} elseif ($event == 'OnManagerLoginFormRender' && $modx->getOption('shibboleth.allow_auth', $scriptProperties, true)) {
+    // Skip the login form if we are forcing Shibboleth auth
+    if ($modx->getOption('shibboleth.force_shib', $scriptProperties, false) && !isset($_REQUEST['show_login'])) {
+        $modx->sendRedirect($handler->modxHandlerUrl('mgr', MODX_MANAGER_URL));
+    }
+}
+
+elseif ($event == 'OnManagerLoginFormRender' && $modx->getOption('shibboleth.allow_auth', $scriptProperties, true)) {
     // Add the Shibboleth login link to the manager login form
     $url = $handler->modxHandlerUrl('mgr', MODX_MANAGER_URL);
     $text = $modx->getOption('shibboleth.login_text', $scriptProperties, 'Shibboleth Login');
@@ -61,9 +72,10 @@ if ($event == 'OnHandleRequest') {
         </div>
     </div>';
     $modx->event->output($html);
+}
 
-} elseif ($event == 'OnBeforeManagerLogin' || $event == 'OnBeforeWebLogin') {
-    // First, determine if the force_shib settings is present for the user
+elseif ($event == 'OnBeforeManagerLogin' || $event == 'OnBeforeWebLogin') {
+    // First, determine if the force_shib setting is present for the user
     $force_shib = $modx->getOption('shibboleth.force_shib', $scriptProperties, false);
     $user = $modx->getObject('modUser', array('username' => $username));
 
@@ -75,8 +87,29 @@ if ($event == 'OnHandleRequest') {
 
     // Next, we deny login if shibboleth auth is both allwowed and forced
     if ($force_shib && $modx->getOption('shibboleth.allow_auth', $scriptProperties, true)) {
-        $modx->error->failure('You must log in using Shibboleth.');
+        $modx->error->failure($modx->lexicon('shibboleth.force_shib_message'));
     } else {
         $modx->event->_output = true;
+    }
+}
+
+elseif ($event == 'OnManagerPageInit') {
+    if ($handler->getModxShibSession()) {
+        $logout_message = $modx->lexicon('shibboleth.logout_message');
+
+        $modx->regClientStartupHTMLBlock('
+            <script type="text/javascript">
+            Ext.onReady(function() {
+                MODx.on("beforeLogout", function() {
+                    var message = MODx.lang.logout_confirm ;
+                    MODx.lang.logout_confirm = "'.$logout_message.'"+" "+message;
+                });
+                MODx.on("afterLogout", function() {
+                    location.href = "./?show_login";
+                    return false;
+                });
+            });
+            </script>
+        ');
     }
 }
