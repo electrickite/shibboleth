@@ -213,6 +213,8 @@ Shibboleth is configured using a number of system settings.
   * shibboleth.force_shib: Force MODX users to authenticate with Shibboleth.
     Prevents normal MODX password login. This could lock users out of the site
     if the IdP is unavailable
+  * shibboleth.enforce_session: Logs out a MODX user that was authenticated with
+    Shibboleth if their Shibboleth session ends.
   * shibboleth.handler: ID of the resource containing the Shibboleth handler
     snippet or the full URL of the handler script
   * shibboleth.create_users: Create MODX user accounts for Shibboleth users

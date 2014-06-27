@@ -16,7 +16,7 @@ $components = array(
     'packageName' => 'Shibboleth',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'Add Shibboleth authentication to MODX Revolution',
-    'version' => '0.1.0',
+    'version' => '0.2.0',
     'release' => 'pl',
     'author' => 'Corey Hinshaw',
     'email' => 'hinshaw.25@osu.edu',
@@ -250,6 +250,15 @@ $components = array(
           'name' => 'Create MODX users',
           'description' => 'Create MODX user accounts for Shibboleth users.',
         ),
+        'shibboleth.enforce_session' => array(
+          'key' => 'shibboleth.enforce_session',
+          'value' => '0',
+          'xtype' => 'combo-boolean',
+          'namespace' => 'shibboleth',
+          'area' => 'User Login',
+          'name' => 'Enforce Shibboleth session',
+          'description' => 'Logs out a MODX user that was authenticated with Shibboleth if their Shibboleth session ends.',
+        ),
     ),
 
 
@@ -295,6 +304,7 @@ $components = array(
                     'OnBeforeWebLogin' => array(),
                     'OnManagerLoginFormPrerender' => array(),
                     'OnManagerLoginFormRender' => array(),
+                    'OnManagerPageInit' => array(),
                 ),
             ),
         ),

@@ -114,6 +114,10 @@ class ShibbolethHandler extends ShibbolethBase  {
         $this->modx->sendRedirect($target);
     }
 
+    /**
+     * Logs the MODX user out of the current context if the Shibboleth session
+     * has expired
+     */
     public function enforceShibSession() {
         if ($this->modx->user
             && $this->getModxShibSession()

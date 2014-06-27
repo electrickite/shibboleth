@@ -94,6 +94,8 @@ elseif ($event == 'OnBeforeManagerLogin' || $event == 'OnBeforeWebLogin') {
 }
 
 elseif ($event == 'OnManagerPageInit') {
+    // Correct manager logout links for Shibboleth sessions
+
     if ($handler->getModxShibSession()) {
         $logout_message = $modx->lexicon('shibboleth.logout_message');
 
