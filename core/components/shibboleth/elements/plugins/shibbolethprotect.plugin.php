@@ -56,10 +56,9 @@ elseif ($event == 'OnManagerLoginFormPrerender' && $modx->getOption('shibboleth.
     if ($handler->getError()) {
         $modx->smarty->assign('error_message', $handler->getError());
         $handler->setError();
-    }
 
-    // Skip the login form if we are forcing Shibboleth auth
-    if ($modx->getOption('shibboleth.force_shib', $scriptProperties, false) && !isset($_REQUEST['show_login'])) {
+    } elseif ($modx->getOption('shibboleth.force_shib', $scriptProperties, false) && !isset($_REQUEST['show_login'])) {
+        // Skip the login form if we are forcing Shibboleth auth
         $modx->sendRedirect($handler->modxHandlerUrl());
     }
 }
