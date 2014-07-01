@@ -175,7 +175,7 @@ $systemSettings[15]->fromArray(array (
 $systemSettings[16] = $modx->newObject('modSystemSetting');
 $systemSettings[16]->fromArray(array (
   'key' => 'shibboleth.force_ssl',
-  'value' => '0',
+  'value' => '1',
   'xtype' => 'combo-boolean',
   'namespace' => 'shibboleth',
   'area' => 'misc',
