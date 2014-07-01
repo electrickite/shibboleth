@@ -66,3 +66,5 @@ $_lang['setting_shibboleth.create_users'] = 'Create MODX users';
 $_lang['setting_shibboleth.create_users_desc'] = 'Create MODX user accounts for Shibboleth users.';
 $_lang['setting_shibboleth.enforce_session'] = 'Enforce Shibboleth session';
 $_lang['setting_shibboleth.enforce_session_desc'] = 'Logs out a MODX user that was authenticated with Shibboleth if their Shibboleth session ends.';
+$_lang['setting_shibboleth.login_param'] = 'Login URL parameter';
+$_lang['setting_shibboleth.login_param_desc'] = 'The URL parameter used to start a Shibboleth login attempt';

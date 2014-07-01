@@ -17,6 +17,12 @@ class ShibbolethHandler extends ShibbolethBase  {
      */
     protected $scheme;
 
+    /**
+     * The name of the Shibboleth login URL parameter
+     * @var string
+     */
+    protected $loginParam;
+
 
     /**
      * Constructor for a ShibbolethHandler object.
@@ -27,6 +33,7 @@ class ShibbolethHandler extends ShibbolethBase  {
     public function __construct($modx, $scriptProperties = array()) {
         $this->shibUser = new ShibbolethUser($modx);
         $this->scheme = $modx->getOption('shibboleth.force_ssl', $scriptProperties, true) ? 'https://' : MODX_URL_SCHEME;
+        $this->loginParam = $modx->getOption('shibboleth.login_param', $scriptProperties, 'shibboleth_login');
         return parent::__construct($modx, $scriptProperties);
     }
 
@@ -70,34 +77,34 @@ class ShibbolethHandler extends ShibbolethBase  {
     /**
      * Handles a Shibboleth login attempt. Authenticates the user if necessary
      * and redirects them to their destination.
+     *
+     * @param string $target
+     *   The destination URL. Defaults to the current page
+     * @param string $context
+     *   The context for the MODX login. Defaults to the current MODX context
      */
-    public function doLogin()
+    public function doLogin($target=null, $context=null)
     {
         // Set session context to log into
-        if (isset($this->scriptProperties['authContext'])) {
-            $context = $this->scriptProperties['authContext'];
-        } elseif ($this->modx->request->getParameters('ctx')) {
-            $context = $this->modx->request->getParameters('ctx');
-        } else {
-            $context = $this->modx->context->get('key');
+        if (empty($context)) {
+            $ctx = $this->modx->request->getParameters('ctx');
+            $context = !empty($ctx) ? urldecode($ctx) : $this->modx->context->get('key');
         }
 
         // Find target URL
-        if (isset($this->scriptProperties['target'])) {
-            $target = $this->scriptProperties['target'];
-        } elseif ($this->modx->request->getParameters('target')) {
-            $target = urldecode($this->modx->request->getParameters('target'));
-        } else {
-            $target = $this->modx->getOption('site_url', null, MODX_SITE_URL);
+        if (empty($target)) {
+            $tgt = $this->modx->request->getParameters($this->loginParam);
+            $target = !empty($tgt) ?
+                urldecode($tgt) :
+                $this->alterUrlParameter($_SERVER['REQUEST_URI'], $this->loginParam, null, true);
         }
-
 
         if ( ! $this->modx->getOption('shibboleth.allow_auth', $this->scriptProperties, true)) {
             // Bail if we do not allow MODX users to authenticate via Shibboleth
 
         } elseif ( ! $this->shibUser->isAuthenticated()) {
             // Authenticate the user
-            $this->authenticate($this->modxHandlerUrl($context, $target));
+            $this->authenticate($_SERVER['REQUEST_URI']);
 
         } else {
             // If the user is authenticated, match them to a MODX user and log them in
@@ -107,7 +114,7 @@ class ShibbolethHandler extends ShibbolethBase  {
             }
         }
 
-        if (!$this->modx->user->isAuthenticated($context)) {
+        if (!$this->modx->user || !$this->modx->user->isAuthenticated($context)) {
             $this->setError($this->modx->lexicon('shibboleth.no_account_message'));
         }
 
@@ -151,17 +158,31 @@ class ShibbolethHandler extends ShibbolethBase  {
      * @return string
      *   The MODX login handler URL
      */
-    public function modxHandlerUrl($context, $target=null)
+    public function modxHandlerUrl($context=null, $target=null)
     {
-        $target = $this->buildTarget($target);
-        $handler = $this->modx->getOption('shibboleth.handler', $this->scriptProperties);
-        if (is_numeric($handler)) {
-            $secure = str_replace('://', '', $this->scheme);
-            return $this->modx->makeUrl(intval($handler), '', array('ctx' => $context, 'target' => $target), $secure);
+        $handler = $this->modx->getOption('shibboleth.handler', $this->scriptProperties, null);
+
+        if ($handler) {
+            $target = $this->buildTarget($target);
+            $context = empty($context) ? $this->modx->context->get('key') : $context;
+
+            if (is_numeric($handler)) {
+                $base_url = $this->modx->makeUrl(intval($handler));
+            } else {
+                $base_url = $handler;
+            }
+
         } else {
-            $separator = parse_url($url, PHP_URL_QUERY) ? '&' : '?';
-            return sprintf('%s%sctx=%s&target=%s', $handler, $separator, $context, $target);
+            if (!empty($target)) $target = $this->buildTarget($target);
+            $base_url = $_SERVER['REQUEST_URI'];
         }
+        
+        $url = $this->alterUrlParameter($base_url, $this->loginParam, $target);
+        if ($context) {
+            $url = $this->alterUrlParameter($url, 'ctx', $context);
+        }
+
+        return $url;
     }
 
     /**
@@ -323,25 +344,73 @@ class ShibbolethHandler extends ShibbolethBase  {
      *
      * @param string $target
      *   A target URL
+     * @param bool $encode
+     *   If true, encode the URL
      * @return string
      *   The sanitized target URL
      */
-    protected function buildTarget($target=null)
+    protected function buildTarget($target=null, $encode=true)
     {
-        if ($target) {
-            $target = filter_var($target, FILTER_SANITIZE_URL);
-            $url_parts = parse_url($target);
-            if ($url_parts && ! isset($url_parts['host'])) {
-                $slash = substr($target, 0, 1) == '/' ? '' : '/';
-                $target = MODX_URL_SCHEME.MODX_HTTP_HOST.$slash.$target;
-            }
-        } elseif (isset($this->modx->resource)) {
-            $target = $this->modx->makeUrl($this->modx->resource->get('id'),'','','http');
-        } else {
-            $target = $this->modx->getOption('site_url', null, MODX_SITE_URL);
+        if (empty($target)) {
+            $target = isset($this->modx->resource) ? 
+                $this->modx->makeUrl($this->modx->resource->get('id'),'','','http') :
+                $_SERVER['REQUEST_URI'];
         }
 
-        return urlencode(str_replace('http://', $this->scheme, $target));
+        $target = filter_var($target, FILTER_SANITIZE_URL);
+        $url_parts = parse_url($target);
+        if ($url_parts && ! isset($url_parts['host'])) {
+            $slash = substr($target, 0, 1) == '/' ? '' : '/';
+            $target = MODX_URL_SCHEME.MODX_HTTP_HOST.$slash.$target;
+        }
+        $url = str_replace('http://', $this->scheme, $target);
+
+        return $encode ? urlencode($url) : $url;
+    }
+
+    /**
+     * Alters a query string parameter and returns the full URL
+     *
+     * @param string $url
+     *   The URL strinto alter
+     * @param string $param
+     *   The parameter name to alter
+     * @param string $value
+     *   The value for the parameter. If null, output will contain an empty
+     *   param (with no =)
+     * @param bool $remove
+     *   Removes the paramter if true
+     *
+     * @return string
+     *   The sanitized target URL
+     */
+    protected function alterUrlParameter($url, $param, $value, $remove=false)
+    {
+        $url_parts = parse_url($url);
+        $query_parts = array();
+        $new_query = array();
+
+        if (isset($url_parts['query']))
+            parse_str($url_parts['query'], $query_parts);
+
+        if ($remove) {
+            unset($query_parts[$param]);
+        } else {
+            $query_parts[$param] = $value;
+        }
+
+        // Build the query string
+        foreach($query_parts as $param => $value) {
+           $new_query[] = $value !== null ? urlencode($param).'='.urlencode($value) : urlencode($param);
+        }
+        $query = implode('&', $new_query);
+
+        // Reconstruct the URL
+        $path = isset($url_parts['path']) ? $url_parts['path'] : '';
+        $query = !empty($query) ? '?' . $query : '';
+        $fragment = isset($url_parts['fragment']) ? '#' . $url_parts['fragment'] : '';
+
+        return $this->buildTarget($path.$query.$fragment, false);
     }
     
 }

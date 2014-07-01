@@ -110,36 +110,6 @@ In addition to securing front-end content, MODX user accounts can be
 authenticated with Shibboleth. This allows manager users to log in with
 credentials supplied by their IdP. 
 
-### Set Up ###
-
-In order to authenticate MODX users, you must create a Shibboleth handler to
-process the login requests. The handler can be either a MODX resource or a PHP
-script.
-
-#### Handler Resource ####
-
-  1. Create a new document in a context accessible by anonymous users (typically
-     the 'web' context)
-  2. Assign the resource an empty template and check "Hide from menus" and
-     "Published"
-  3. In the content area, call the shibHandler snippet: `[[!shibHandler]]`
-  4. Enter the resource ID of the new handler document in the
-     `shibboleth.handler` system setting
-
-Make sure this resource remains published and accessible. If removed, it may
-prevent users from logging in! You might consider adding it to a protected
-resource group to prevent accidental alterations.
-
-#### Handler Script ####
-
-  1. Locate the example handler script in
-     `core/components/shibboleth/example/handler.php.example`.
-  2. Copy the example script to a location in your MODX web root. For example:
-     `http://example.com/shibboleth.php`.
-  3. If the script is not located in the same directory as `config.core.php`,
-     uncomment and set the `$config_path` variable to the absolute file system
-     path of a `config.core.php` file.
-
 ### Logging In ###
 
 Users should see a 'Shibboleth Login' link on the manager login form. Clicking
@@ -159,6 +129,37 @@ example, if Shibboleth supplied usernames in the format `DOMAIN\user` but MODX
 accounts use only `username`, you could use this snippet to match the two:
 
     return str_replace('DOMAIN\\', '', $username);
+
+### Login Handler ###
+
+You may optionally create a handler that will process all Shibboleth login
+attempts. A handler is not required: you should skip these steps if you do not
+need one. A handler may be useful if you need to limit Shibboleth-enabled URLs
+and can be either a MODX resource _or_ a PHP script.
+
+#### Handler Resource ####
+
+  1. Create a new document in a context accessible by anonymous users (typically
+     the 'web' context)
+  2. Assign the resource an empty template and check "Hide from menus" and
+     "Published"
+  3. In the content area, call the shibHandler snippet: `[[!shibHandler]]`
+  4. Enter the resource ID of the new handler document in the
+     `shibboleth.handler` system setting
+
+Make sure this resource remains published and accessible. If removed, it may
+prevent users from logging in! You might consider adding it to a protected
+resource group to prevent accidental alterations.
+
+#### Handler Script ####
+
+  1. Locate the example handler script in
+     `core/components/shibboleth/example/handler.php`.
+  2. Copy the example script to a location in your MODX web root. For example:
+     `http://example.com/shibboleth.php`.
+  3. If the script is not located in the same directory as `config.core.php`,
+     uncomment and set the `$config_path` variable to the absolute file system
+     path of a `config.core.php` file.
 
 ### Group synchronization ###
 
@@ -215,9 +216,12 @@ Shibboleth is configured using a number of system settings.
     if the IdP is unavailable
   * shibboleth.enforce_session: Logs out a MODX user that was authenticated with
     Shibboleth if their Shibboleth session ends.
-  * shibboleth.handler: ID of the resource containing the Shibboleth handler
-    snippet or the full URL of the handler script
   * shibboleth.create_users: Create MODX user accounts for Shibboleth users
+  * shibboleth.login_param: The URL parameter used to start a Shibboleth login
+    attempt
+  * shibboleth.handler: ID of the resource containing the Shibboleth handler
+    snippet or the full URL of the handler script. Only needed if using a login
+    handler
   * shibboleth.group_rules: Group mapping rules, one per line.
     `GroupName RoleName attribute value1 value2 value3 ...`
   * shibboleth.transform_snippet: Name of the username transform snippet

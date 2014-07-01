@@ -33,6 +33,12 @@ if ($event == 'OnHandleRequest') {
 
     // Remove the MODX session if no shibboleth session is present
     $handler->enforceShibSession();
+
+    // Handle the Shibboleth authentication is requested
+    $param = $modx->getOption('shibboleth.login_param', $scriptProperties, 'shibboleth_login');
+    if (isset($_REQUEST[$param])) {
+        $handler->doLogin();
+    }
 }
 
 elseif ($event == 'OnWebPagePrerender' && (bool)$modx->resource->getTVValue($tv)) {
@@ -54,13 +60,13 @@ elseif ($event == 'OnManagerLoginFormPrerender' && $modx->getOption('shibboleth.
 
     // Skip the login form if we are forcing Shibboleth auth
     if ($modx->getOption('shibboleth.force_shib', $scriptProperties, false) && !isset($_REQUEST['show_login'])) {
-        $modx->sendRedirect($handler->modxHandlerUrl('mgr', MODX_MANAGER_URL));
+        $modx->sendRedirect($handler->modxHandlerUrl());
     }
 }
 
 elseif ($event == 'OnManagerLoginFormRender' && $modx->getOption('shibboleth.allow_auth', $scriptProperties, true)) {
     // Add the Shibboleth login link to the manager login form
-    $url = $handler->modxHandlerUrl('mgr', MODX_MANAGER_URL);
+    $url = $handler->modxHandlerUrl();
     $text = $modx->getOption('shibboleth.login_text', $scriptProperties, 'Shibboleth Login');
 
     $html = '<br class="clear" />

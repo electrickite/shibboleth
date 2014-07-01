@@ -1,5 +1,11 @@
 Changelog for Shibboleth
 
+Shibboleth 0.3.0
+---------------------------------
+ * Dedicated handler resource/script is now optional
+ * Added setting for the Shibboleth login query parameter
+
+
 Shibboleth 0.2.0
 ---------------------------------
  * Added option to enforce Shibboleth sessions
