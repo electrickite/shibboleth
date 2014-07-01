@@ -126,12 +126,15 @@ class ShibbolethHandler extends ShibbolethBase  {
      * has expired
      */
     public function enforceShibSession() {
+        $ctx = $this->modx->context->get('key');
+
         if ($this->modx->user
+            && $this->modx->user->hasSessionContext($ctx)
             && $this->getModxShibSession()
             && $this->shibUser->sessionId() != $this->getModxShibSession()
             && $this->modx->getOption('shibboleth.enforce_session', $this->scriptProperties, false)
         ) {
-            $this->modx->user->removeSessionContext($this->modx->context->get('key'));
+            $this->modx->user->removeSessionContext($ctx);
             $this->modx->sendRedirect($_SERVER['REQUEST_URI']);
         }
     }
