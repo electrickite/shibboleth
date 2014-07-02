@@ -178,7 +178,11 @@ with the specified role. For example, with the rule:
 A user who has the "manager" or "employee" affiliation will be added to the
 Administrator group with the Super User role. Conversely, if a user does not
 have the employee or manager affiliation, they will be removed from the
-Administrator group.
+Administrator group if they have the Super User role.
+
+You can add a group to all users by omitting the attribute and value fields:
+
+    Administrator "All Users Role"
 
 System Settings
 ---------------

@@ -1,5 +1,12 @@
 Changelog for Shibboleth
 
+Shibboleth 0.4.0
+---------------------------------
+ * Add group rules that apply to all users
+ * Group removal must match both group and role
+ * Fix more redirect loops
+
+
 Shibboleth 0.3.1
 ---------------------------------
  * Fixed enforced session redirect loop
