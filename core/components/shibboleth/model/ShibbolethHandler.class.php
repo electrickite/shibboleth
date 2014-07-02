@@ -265,12 +265,30 @@ class ShibbolethHandler extends ShibbolethBase  {
     protected function syncModxGroups()
     {
         $this->requiresUser();
+        $groups = $this->getModxGroups();
 
-        foreach($this->getModxGroups() as $group => $role) {
-            if ($role) {
-                $this->modx->user->joinGroup($group, $role);
-            } else {
-                $this->modx->user->leaveGroup($group);
+        foreach($groups['join'] as $group => $role) {
+            $this->modx->user->joinGroup($group, $role);
+        }
+        foreach($groups['leave'] as $group => $role) {
+            $this->leaveGroup($group, $role);
+        }
+    }
+
+    protected function leaveGroup($groupName, $roleName)
+    {
+        $group = $this->modx->getObject('modUserGroup', array('name' => $groupName));
+        $role = $this->modx->getObject('modUserGroupRole', array('name' => $roleName));
+
+        if (!empty($group) && !empty($role)) {
+            $member = $this->modx->getObject('modUserGroupMember', array(
+                'member' => $this->modx->user->get('id'),
+                'user_group' => $group->get('id'),
+                'role' => $role->get('id'),
+            ));
+
+            if (!empty($member)) {
+                $this->modx->user->leaveGroup($group->get('id'));
             }
         }
     }
@@ -286,7 +304,7 @@ class ShibbolethHandler extends ShibbolethBase  {
     {
         $group_rules = $this->modx->getOption('shibboleth.group_rules', $this->scriptProperties);
         $lines = explode("\n", $group_rules);
-        $groups = array();
+        $groups = array('join'=>array(), 'leave'=>array());
         
         foreach ($lines as $line) {
             $line = trim($line);
@@ -295,13 +313,13 @@ class ShibbolethHandler extends ShibbolethBase  {
             if (count($line_parts) >= 2) {
                 $group = array_shift($line_parts);
                 $role = array_shift($line_parts);
-                if (!isset($groups[$group])) $groups[$group] = false;
 
-                if (empty($line_parts)) {
-                    $groups[$group] = $role;
+                if (empty($line_parts) || $this->shibUser->checkRules(array($line_parts))) {
+                    $action = 'join';
                 } else {
-                    $groups[$group] = $this->shibUser->checkRules(array($line_parts)) ? $role : $groups[$group];
+                    $action = 'leave';
                 }
+                $groups[$action][$group] = $role;
             }
         }
 
