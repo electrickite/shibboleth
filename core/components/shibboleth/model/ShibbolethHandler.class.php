@@ -292,12 +292,16 @@ class ShibbolethHandler extends ShibbolethBase  {
             $line = trim($line);
 
             $line_parts = str_getcsv($line, ' ');
-            if (count($line_parts >= 3)) {
+            if (count($line_parts) >= 2) {
                 $group = array_shift($line_parts);
                 $role = array_shift($line_parts);
                 if (!isset($groups[$group])) $groups[$group] = false;
 
-                $groups[$group] = $this->shibUser->checkRules(array($line_parts)) ? $role : $groups[$group];
+                if (empty($line_parts)) {
+                    $groups[$group] = $role;
+                } else {
+                    $groups[$group] = $this->shibUser->checkRules(array($line_parts)) ? $role : $groups[$group];
+                }
             }
         }
 
