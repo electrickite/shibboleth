@@ -34,7 +34,7 @@ if ($event == 'OnHandleRequest') {
     // Remove the MODX session if no shibboleth session is present
     $handler->enforceShibSession();
 
-    // Handle the Shibboleth authentication is requested
+    // Handle Shibboleth authentication if requested
     $param = $modx->getOption('shibboleth.login_param', $scriptProperties, 'shibboleth_login');
     if (isset($_REQUEST[$param])) {
         $handler->doLogin();
@@ -90,7 +90,7 @@ elseif ($event == 'OnBeforeManagerLogin' || $event == 'OnBeforeWebLogin') {
             $force_shib = $settings['shibboleth.force_shib'];
     }
 
-    // Next, we deny login if shibboleth auth is both allwowed and forced
+    // Next, we deny login if shibboleth auth is both allowed and forced
     if ($force_shib && $modx->getOption('shibboleth.allow_auth', $scriptProperties, true)) {
         $modx->error->failure($modx->lexicon('shibboleth.force_shib_message'));
     } else {
