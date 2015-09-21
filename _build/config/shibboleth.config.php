@@ -16,12 +16,12 @@ $components = array(
     'packageName' => 'Shibboleth',  /* No spaces, no dashes */
     'packageNameLower' => $packageNameLower,
     'packageDescription' => 'Add Shibboleth authentication to MODX Revolution',
-    'version' => '0.4.0',
+    'version' => '0.5.0',
     'release' => 'pl',
     'author' => 'Corey Hinshaw',
     'email' => 'hinshaw.25@osu.edu',
     'packageDocumentationUrl' => 'https://github.com/osucomm/shibboleth',
-    'copyright' => '2014',
+    'copyright' => '2015',
 
     /* no need to edit this except to change format */
     'createdon' => strftime('%m-%d-%Y'),
@@ -313,6 +313,8 @@ $components = array(
                     'OnBeforeWebLogin' => array(),
                     'OnManagerLoginFormPrerender' => array(),
                     'OnManagerLoginFormRender' => array(),
+                    'OnManagerAuthentication' => array(),
+                    'OnWebAuthentication' => array(),
                     'OnManagerPageInit' => array(),
                 ),
             ),

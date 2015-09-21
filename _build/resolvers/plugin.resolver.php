@@ -96,6 +96,18 @@ if ($object->xpdo) {
                   'priority' => '0',
                   'propertyset' => '0',
                 ),
+                7 =>  array (
+                  'pluginid' => 'ShibbolethProtect',
+                  'event' => 'OnManagerAuthentication',
+                  'priority' => '0',
+                  'propertyset' => '0',
+                ),
+                8 =>  array (
+                  'pluginid' => 'ShibbolethProtect',
+                  'event' => 'OnWebAuthentication',
+                  'priority' => '0',
+                  'propertyset' => '0',
+                ),
             );
 
             if (is_array($intersects)) {

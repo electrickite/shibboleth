@@ -23,6 +23,18 @@ class ShibbolethHandler extends ShibbolethBase  {
      */
     protected $loginParam;
 
+    /**
+     * State of the current Shibboleth authentication attempt
+     * @var bool
+     */
+    protected $shibAuthAttempt = false;
+
+    /**
+     * Current handler MODX user object
+     * @var modUser
+     */
+    protected $user;
+
 
     /**
      * Constructor for a ShibbolethHandler object.
@@ -189,19 +201,6 @@ class ShibbolethHandler extends ShibbolethBase  {
     }
 
     /**
-     * Attempts to work around Apache prepending REDIRECT_ to environment
-     * variables
-     */
-    public function fixEnvironment()
-    {
-        if ($this->modx->getOption('shibboleth.fixenv', $this->scriptProperties, true)) {
-            foreach ($_SERVER as $key => $value)
-                if (substr_compare($key, "REDIRECT_", 0, 9) == 0)
-                    $_SERVER[preg_replace('/REDIRECT_/', '', $key)] = $value;
-        }
-    }
-
-    /**
      * Retrieves Shibboleth errors stored in the user session
      *
      * @return string
@@ -223,6 +222,36 @@ class ShibbolethHandler extends ShibbolethBase  {
         $_SESSION['shibboleth_error'] = $message;
     }
 
+    /**
+     * Determine if the user is attempting to authenticate via Shibboleth on
+     * during request.
+     *
+     * @return bool
+     *   True if this is a Shib auth attempt, false if not
+     */
+    public function isShibAuthAttempt()
+    {
+        return $this->shibAuthAttempt;
+    }
+
+    /**
+     * Match the provided user to the handler's current MODX user
+     *
+     * @param modUser $user
+     *   The user to match
+     * @return bool
+     *   True if the users match, false if they are different
+     */
+    public function matchAuthenticatedUserTo($user)
+    {
+        $match = false;
+        if ($this->user) {
+            $match = $user->get('id') == $this->user->get('id');
+        }
+        return $match;
+    }
+
+
 
     /**
      * Searches the for a MODX user matching the authenticated Shibboleth user.
@@ -241,21 +270,21 @@ class ShibbolethHandler extends ShibbolethBase  {
         }
 
         // Check the MODX database for our Shibboleth user name
-        $this->modx->user = $this->modx->getObject('modUser', array('username' => $username));
+        $this->user = $this->modx->getObject('modUser', array('username' => $username));
 
-        if (!$this->modx->user && $this->modx->getOption('shibboleth.create_users', $this->scriptProperties, false)) {
+        if (!$this->user && $this->modx->getOption('shibboleth.create_users', $this->scriptProperties, false)) {
             // Add a new user
-            $this->modx->user = $this->modx->newObject('modUser', array('username' => $username));
+            $this->user = $this->modx->newObject('modUser', array('username' => $username));
             $userProfile = $this->modx->newObject('modUserProfile');
             $userProfile->set('email', $this->shibUser->email());
             $userProfile->set('fullname', $this->shibUser->fullname());
-            $this->modx->user->addOne($userProfile);
-            if ($this->modx->user->save() == false) {
-                $this->modx->user = null;
+            $this->user->addOne($userProfile);
+            if ($this->user->save() == false) {
+                $this->user = null;
             }
         }
 
-        return $this->modx->user;
+        return $this->user;
     }
 
     /**
@@ -268,7 +297,7 @@ class ShibbolethHandler extends ShibbolethBase  {
         $groups = $this->getModxGroups();
 
         foreach($groups['join'] as $group => $role) {
-            $this->modx->user->joinGroup($group, $role);
+            $this->user->joinGroup($group, $role);
         }
         foreach($groups['leave'] as $group => $role) {
             $this->leaveGroup($group, $role);
@@ -277,18 +306,19 @@ class ShibbolethHandler extends ShibbolethBase  {
 
     protected function leaveGroup($groupName, $roleName)
     {
+        $this->requiresUser();
         $group = $this->modx->getObject('modUserGroup', array('name' => $groupName));
         $role = $this->modx->getObject('modUserGroupRole', array('name' => $roleName));
 
         if (!empty($group) && !empty($role)) {
             $member = $this->modx->getObject('modUserGroupMember', array(
-                'member' => $this->modx->user->get('id'),
+                'member' => $this->user->get('id'),
                 'user_group' => $group->get('id'),
                 'role' => $role->get('id'),
             ));
 
             if (!empty($member)) {
-                $this->modx->user->leaveGroup($group->get('id'));
+                $this->user->leaveGroup($group->get('id'));
             }
         }
     }
@@ -336,13 +366,36 @@ class ShibbolethHandler extends ShibbolethBase  {
     {
         $this->requiresUser();
 
-        // Log user in
-        if (!$this->modx->user->hasSessionContext($context)) {
-            $this->modx->user->addSessionContext($context);
-        }
+        $this->startAuthAttempt();
 
-        // Flag this MODX session as a Shibboleth session
-        $this->setModxShibSession($this->shibUser->sessionId());
+        $response = $this->modx->runProcessor('security/login', array(
+            'username'      => $this->user->get('username'),
+            'password'      => 'notapassword',
+            'login_context' => $context,
+        ));
+
+        $this->endAuthAttempt();
+
+        if (!$response->isError()) {
+            // Flag this MODX session as a Shibboleth session
+            $this->setModxShibSession($this->shibUser->sessionId());
+        }
+    }
+
+    /**
+     * Inidicate that the user is attempting to authenticate via Shib
+     */
+    protected function startAuthAttempt()
+    {
+        $this->shibAuthAttempt = true;
+    }
+
+    /**
+     * Inidicate that the user is no longer attempting to authenticate via Shib
+     */
+    protected function endAuthAttempt()
+    {
+        $this->shibAuthAttempt = false;
     }
 
     /**
@@ -350,7 +403,7 @@ class ShibbolethHandler extends ShibbolethBase  {
      */
     protected function requiresUser()
     {
-        if (!$this->modx->user) throw new RuntimeException('MODX user not set');
+        if (!$this->user) throw new RuntimeException('MODX user not set');
     }
 
     /**
