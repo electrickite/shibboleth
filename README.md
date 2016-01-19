@@ -284,13 +284,13 @@ reports? Please open an issue in the project's issue queue.
 Author
 ------
 
-Written and maintained by Corey Hinshaw <hinshaw.25@osu.edu> for the Ohio State
-University, [University Communications][5]. 
+Written and maintained by Corey Hinshaw <hinshaw.25@osu.edu>
+Originally written for the [Ohio State University][5]. 
 
 
 
 [1]: https://shibboleth.net
 [2]: https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPProtectContent#NativeSPProtectContent-PassiveProtection
 [3]: https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPhtaccess#NativeSPhtaccess-GeneralSyntax
-[4]: https://github.com/osucomm/shibboleth
-[5]: http://ucom.osu.edu
+[4]: https://github.com/electrickite/shibboleth
+[5]: https://www.osu.edu

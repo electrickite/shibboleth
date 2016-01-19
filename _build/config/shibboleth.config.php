@@ -20,7 +20,7 @@ $components = array(
     'release' => 'pl',
     'author' => 'Corey Hinshaw',
     'email' => 'hinshaw.25@osu.edu',
-    'packageDocumentationUrl' => 'https://github.com/osucomm/shibboleth',
+    'packageDocumentationUrl' => 'https://github.com/electrickite/shibboleth',
     'copyright' => '2015',
 
     /* no need to edit this except to change format */
