@@ -1,23 +1,7 @@
 <?php
 /**
  * en default topic lexicon file for Shibboleth extra
- *
- * @package shibboleth
  */
-
-/**
- * Description
- * -----------
- * en default topic lexicon strings
- *
- * Variables
- * ---------
- * @var $modx modX
- * @var $scriptProperties array
- *
- * @package shibboleth
- **/
-
 
 $_lang['shibboleth.logout_message'] = 'To finish logging out, you must close your web browser.';
 $_lang['shibboleth.force_shib_message'] = 'You must log in using Shibboleth.';
@@ -29,7 +13,7 @@ $_lang['area_content_protection'] = 'Content Protection';
 $_lang['area_misc'] = 'Miscellaneous';
 
 
-/* Used in transport.settings.php */
+/* Settings */
 $_lang['setting_shibboleth.rules'] = 'Shibboleth Authorization Rules';
 $_lang['setting_shibboleth.rules_desc'] = 'A list of Shibboleth authorization rules, one per line, in Apache directive format';
 $_lang['setting_shibboleth.rules_file'] = 'Shibboleth Rule File';

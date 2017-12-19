@@ -288,7 +288,6 @@ Written and maintained by Corey Hinshaw <hinshaw.25@osu.edu>
 Originally written for the [Ohio State University][5]. 
 
 
-
 [1]: https://shibboleth.net
 [2]: https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPProtectContent#NativeSPProtectContent-PassiveProtection
 [3]: https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPhtaccess#NativeSPhtaccess-GeneralSyntax
