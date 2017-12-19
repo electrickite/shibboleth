@@ -1,10 +1,12 @@
 <?php
-
 /**
  * Common methods and properties for Shibboleth classes functions
+ *
+ * @package shibboleth
  */
-class ShibbolethBase {
 
+class ShibbolethBase
+{
     /**
      * The Modx object for this request
      * @var Modx
@@ -23,7 +25,8 @@ class ShibbolethBase {
      * @param Modx $modx
      *   The Modx object
      */
-    public function __construct($modx, $scriptProperties = array()) {
+    public function __construct($modx, $scriptProperties = array())
+    {
         $this->modx = $modx;
         $this->scriptProperties = $scriptProperties;
     }

@@ -1,6 +1,8 @@
 <?php
 /**
  * en properties topic lexicon file for Shibboleth extra
+ *
+ * @package shibboleth
  */
 
 $_lang['prop_shibboleth.attribute_desc'] = 'The user attribute to display';

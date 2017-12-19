@@ -1,6 +1,9 @@
 <?php
 /**
  * Property transport file for the shibLoginUrl snippet
+ *
+ * @package shibboleth
+ * @subpackage build
  */
 
 $properties = array(

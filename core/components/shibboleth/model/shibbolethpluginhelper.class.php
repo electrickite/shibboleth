@@ -1,10 +1,12 @@
 <?php
-
 /**
  * Utility class for the ShibbolethProtect Plugin
+ *
+ * @package shibboleth
  */
-class ShibbolethPluginHelper extends ShibbolethBase {
 
+class ShibbolethPluginHelper extends ShibbolethBase
+{
     /**
      * Attempts to work around Apache prepending REDIRECT_ to environment
      * variables

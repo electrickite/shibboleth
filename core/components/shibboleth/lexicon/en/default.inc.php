@@ -1,6 +1,8 @@
 <?php
 /**
  * en default topic lexicon file for Shibboleth extra
+ *
+ * @package shibboleth
  */
 
 $_lang['shibboleth.logout_message'] = 'To finish logging out, you must close your web browser.';

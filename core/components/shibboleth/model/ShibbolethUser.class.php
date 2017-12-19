@@ -1,16 +1,17 @@
 <?php
-
 /**
  * Represents user who should be authenticated via Shibboleth.
+ *
+ * @package shibboleth
  */
-class ShibbolethUser extends ShibbolethBase {
 
+class ShibbolethUser extends ShibbolethBase
+{
     /**
      * The authorization rules for this user
      * @var array
      */
     protected $rules;
-
 
     /**
      * Checks that the user has been authenticated.

@@ -1,6 +1,9 @@
 <?php
 /**
  * Shibboleth MODX Extra build script
+ *
+ * @package shibboleth
+ * @subpackage build
  */
 
 $tstart = explode(' ', microtime());
@@ -60,8 +63,6 @@ foreach ($settings as $setting) {
 }
 $modx->log(modX::LOG_LEVEL_INFO, 'Packaged in '.count($settings).' system settings.'); flush();
 unset($settings, $setting, $attributes);
-
-
 
 /* add plugins */
 $plugins = include $sources['data'].'transport.plugins.php';

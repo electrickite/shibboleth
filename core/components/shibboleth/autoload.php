@@ -4,7 +4,10 @@
  *      
  * @param string $class
  *   The fully-qualified class name.
+ *
+ * @package shibboleth
  */
+
 spl_autoload_register(function ($class) {
     $base_dir = __DIR__.DIRECTORY_SEPARATOR.'model'.DIRECTORY_SEPARATOR;
 

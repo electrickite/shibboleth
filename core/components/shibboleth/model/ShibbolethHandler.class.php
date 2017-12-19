@@ -1,10 +1,12 @@
 <?php
-
 /**
  * Encapsulates Shibboleth login handler functions
+ *
+ * @package shibboleth
  */
-class ShibbolethHandler extends ShibbolethBase  {
 
+class ShibbolethHandler extends ShibbolethBase
+{
     /**
      * The Shibboleth user object
      * @var ShibbolethUser
@@ -42,7 +44,8 @@ class ShibbolethHandler extends ShibbolethBase  {
      * @param Modx $modx
      *   The Modx object
      */
-    public function __construct($modx, $scriptProperties = array()) {
+    public function __construct($modx, $scriptProperties = array())
+    {
         $this->shibUser = new ShibbolethUser($modx);
         $this->scheme = $modx->getOption('shibboleth.force_ssl', $scriptProperties, true) ? 'https://' : MODX_URL_SCHEME;
         $this->loginParam = $modx->getOption('shibboleth.login_param', $scriptProperties, 'shibboleth_login');
@@ -137,7 +140,8 @@ class ShibbolethHandler extends ShibbolethBase  {
      * Logs the MODX user out of the current context if the Shibboleth session
      * has expired
      */
-    public function enforceShibSession() {
+    public function enforceShibSession()
+    {
         $ctx = $this->modx->context->get('key');
 
         if ($this->modx->user

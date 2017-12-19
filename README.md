@@ -68,7 +68,7 @@ Finally, add the TV to a template and set the `shibboleth.tv` system setting to
 the TV name. Any resources with the TV set will trigger the ShibbolethProtect
 plugin.
 
-### Authentication and Authorization ###
+### Authentication and Authorization
 
 When handling requests for protected resources, MODX will first check that the
 user has an active Shibboleth session. If they do not, they will be redirected
@@ -110,7 +110,7 @@ In addition to securing front-end content, MODX user accounts can be
 authenticated with Shibboleth. This allows manager users to log in with
 credentials supplied by their IdP. 
 
-### Logging In ###
+### Logging In
 
 Users should see a 'Shibboleth Login' link on the manager login form. Clicking
 this link will direct them to the handler created earlier. From there, they will
@@ -130,14 +130,14 @@ accounts use only `username`, you could use this snippet to match the two:
 
     return str_replace('DOMAIN\\', '', $username);
 
-### Login Handler ###
+### Login Handler
 
 You may optionally create a handler that will process all Shibboleth login
 attempts. A handler is not required: you should skip these steps if you do not
 need one. A handler may be useful if you need to limit Shibboleth-enabled URLs
 and can be either a MODX resource _or_ a PHP script.
 
-#### Handler Resource ####
+#### Handler Resource
 
   1. Create a new document in a context accessible by anonymous users (typically
      the 'web' context)
@@ -151,7 +151,7 @@ Make sure this resource remains published and accessible. If removed, it may
 prevent users from logging in! You might consider adding it to a protected
 resource group to prevent accidental alterations.
 
-#### Handler Script ####
+#### Handler Script
 
   1. Locate the example handler script in
      `core/components/shibboleth/example/handler.php`.
@@ -161,7 +161,7 @@ resource group to prevent accidental alterations.
      uncomment and set the `$config_path` variable to the absolute file system
      path of a `config.core.php` file.
 
-### Group synchronization ###
+### Group synchronization
 
 The groups and roles for a MODX user can optionally be synchronized with
 attributes provided by Shibboleth. The mapping between MODX groups and
@@ -189,7 +189,7 @@ System Settings
 
 Shibboleth is configured using a number of system settings.
 
-### Environment ###
+### Environment
 
   * shibboleth.session_indicator: Environment variable that indicates the
     presence of a Shibboleth session. Typically Shib-Session-ID
@@ -205,14 +205,14 @@ Shibboleth is configured using a number of system settings.
   * shibboleth.fixenv: Attempt to fix Apache mod_rewrite prepending 'REDIRECT_'
     to variable names
 
-### Content Protection ###
+### Content Protection
 
   * shibboleth.tv: Name of the TV used to designate a protected resource
   * shibboleth.rules: Authorization rules, one per line, in Apache syntax
   * shibboleth.rules_file: absolute file system path to a file containing
     authorization rules
 
-### User login ###
+### User login
 
   * shibboleth.allow_auth: Allow MODX users to authenticate with Shibboleth
   * shibboleth.force_shib: Force MODX users to authenticate with Shibboleth.
@@ -230,7 +230,7 @@ Shibboleth is configured using a number of system settings.
     `GroupName RoleName attribute value1 value2 value3 ...`
   * shibboleth.transform_snippet: Name of the username transform snippet
 
-### Miscelaneous ###
+### Miscelaneous
 
   * shibboleth.force_ssl: Force URLs to use the HTTPS scheme for SSL
     encryption. WARNING: Do not turn off this setting unless you understand the
@@ -244,7 +244,7 @@ Helper Snippets
 Several convenience snippets can be used to gather information from the
 Shibboleth session.
 
-###ShibAuth
+### ShibAuth
 
 Tests whether the current user is authorized to view protected resources. Will
 return '1' if the user is authorized and '0' if not. The snippet can be used in
@@ -252,14 +252,14 @@ any resource.
 
     [[!shibAuth:is=`0`:then=`class=“content-is-locked"`]]
 
-###ShibAttr
+### ShibAttr
 
 Returns the value of the Shibboleth attribute specified in the `attribute`
 property for the currently authenticated user. 
 
     [[!shibAttr? &attribute=`email`]]
 
-###ShibLoginUrl
+### ShibLoginUrl
 
 Returns the Shibboleth login URL for the current resource. Can also redirect to
 an artibtrary URL by passing a `target` property.
@@ -267,7 +267,7 @@ an artibtrary URL by passing a `target` property.
     [[!shibLoginUrl]]
     [[!shibLoginUrl? &target=`http://www.example.com`]]
 
-###ShibHandlerUrl
+### ShibHandlerUrl
 
 Returns the MODX Shibboleth handler URL. Set the destination context and URL in
 the `context` and `target` properties.
@@ -284,9 +284,30 @@ reports? Please open an issue in the project's issue queue.
 Author
 ------
 
-Written and maintained by Corey Hinshaw <hinshaw.25@osu.edu>
-Originally written for the [Ohio State University][5]. 
+Written and maintained by Corey Hinshaw <hinshaw.25@osu.edu>  
+Originally written for the [Ohio State University][5].
 
+License and copyright
+---------------------
+
+Copyright 2017 Corey Hinshaw
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 [1]: https://shibboleth.net
