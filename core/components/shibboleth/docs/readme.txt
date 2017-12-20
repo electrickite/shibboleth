@@ -6,33 +6,29 @@ open-source project that provides single sign-on capabilities and allows sites
 to make informed authorization decisions for individual access to protected
 online resources in a privacy-preserving manner.
 
-The Shibboleth add-on can be used to secure individual resources and to
+The Shibboleth extra can be used to secure individual resources and to
 authenticate MODX user accounts.
-
-**Note:** Shibboleth replaces the deprecated ShibProtect add-on. Shibboleth
-contains the same content protection features as ShibProtect, but adds many
-additional capabilities.
 
 Requirements
 ------------
 
 You must have Shibboleth installed and properly configured on the web server
-hosting MODX. This add-on was written for use with an Apache web server. For
+hosting MODX. This extra was written for use with an Apache web server. For
 example, the syntax for specifying content authorization rules is identical to
-the Shibboleth Apache directives. Other server configurations may work, but
-should be well tested before being used in production.
+the Shibboleth Apache directives. Other server configurations may be possible,
+but should be well tested before being used in production.
 
 Because Shibboleth provides very little security when used over unencrypted
 (HTTP) connections, only HTTPS URLs are supported by this extra. Your site must
-have SSL support.
+have TLS support.
 
 Configure Shibboleth
 --------------------
 
-This add-on assumes that Shibboleth has been enabled in
+This extra assumes that Shibboleth has been enabled in
 [passive or "lazy session" mode][2] for the root directory (containing
 index.php) of the MODX site. In a typical setup, the following directives should
-be added to the .htaccess file in the MODX root folder, after the RewriteBase
+be added to the `.htaccess` file in the MODX root folder, after the RewriteBase
 directive.
 
     # Skip Shibboleth URLs. May be necessary, depending on server configuration
@@ -46,8 +42,8 @@ directive.
 
 Note that these settings will not protect any files or resources present in the
 file system. For access controlled downloads, appropriate Shibboleth directives
-will need to be placed in the .htaccess file for the directory that contains the
-files to be protected.
+will need to be placed in the `.htaccess` file for the directory that contains
+the files to be protected.
 
 Protect MODX Resources
 ----------------------
@@ -55,8 +51,8 @@ Protect MODX Resources
 Typically, a resource is protected by Shibboleth using web server directives
 that require a Shibboleth session. In addition to authentication, Shibboleth can
 restrict access to certain groups based on attributes provided by a user's
-Identity Provider (IdP). These directives are often placed in .htaccess files to
-protect different paths and directories in the web root.
+Identity Provider (IdP). These directives are often placed in `.htaccess` files
+to protect different paths and directories in the web root.
 
 Protecting MODX resources using this method can be difficult since they do not
 exist on the file system. This add-on allows resources to be protected by
@@ -65,7 +61,7 @@ Shibboleth based on the value of a template variable.
 To protect pages, create a template variable that will be used to designate the
 resource as protected by Shibboleth. Make sure it has a 1/0 or true/false value.
 Finally, add the TV to a template and set the `shibboleth.tv` system setting to
-the TV name. Any resources with the TV set will trigger the ShibbolethProtect
+the TV name. Any resources with the TV set will trigger the `ShibbolethProtect`
 plugin.
 
 ### Authentication and Authorization
@@ -81,10 +77,8 @@ After authentication, Shibboleth can also check that a user is authorized to
 view protected content. Authorization rules can be configured in the
 `shibboleth.rules` system setting, one per line. The rules should be entered
 using the 'shib-attr' [Apache syntax][3]. The attributes available will vary
-based on the user's IdP: contact you IdP administrator for details on the types
-of information provided with each user. (One way to get an idea of the
-attributes in your environment is to dump the `$_SERVER` variable of an active
-Shib session)
+based on the user's IdP. (One way to get an idea of the attributes in your
+environment is to dump the `$_SERVER` variable of an active Shib session)
 
 An example rule set might look something like this:
 
@@ -113,9 +107,9 @@ credentials supplied by their IdP.
 ### Logging In
 
 Users should see a 'Shibboleth Login' link on the manager login form. Clicking
-this link will direct them to the handler created earlier. From there, they will
-either be logged in if they already have a Shibboleth session, or sent to the
-identity provider if they do not.
+this link will direct them to the login handler. From there, they will either be
+logged in if they already have a Shibboleth session or sent to the identity
+provider if they do not.
 
 MODX will compare the username provided by Shibboleth against user accounts in
 its database. If the username matches, that user will be logged in. If no MDOX
