@@ -20,7 +20,7 @@ $plugins[1]->setContent(file_get_contents($sources['elements'] . 'plugins/shibbo
 $events = include $sources['data'] . 'events/shibbolethprotect.events.php';
 if (is_array($events) && !empty($events)) {
     $plugins[1]->addMany($events);
-    $modx->log(xPDO::LOG_LEVEL_INFO, 'Packaged in '.count($events).' Plugin Events for ShibbolethProtect plugin.'); flush();
+    $modx->log(xPDO::LOG_LEVEL_INFO, 'Packaged in '.count($events).' Plugin Events for ShibbolethProtect plugin'); flush();
 } else {
     $modx->log(xPDO::LOG_LEVEL_ERROR, 'Could not find plugin events for ShibbolethProtect plugin!');
 }
