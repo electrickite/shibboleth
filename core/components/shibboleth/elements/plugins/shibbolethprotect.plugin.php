@@ -2,17 +2,9 @@
 /**
  * ShibbolethProtect plugin for Shibboleth extra
  *
- * @package shibboleth
- */
-
-/**
- * Description
- * -----------
  * Secures certain pages via Shibboleth authentication and allows Shibboleth
  * logins for MODX users
  *
- * Variables
- * ---------
  * @var $modx modX
  * @var $scriptProperties array
  *

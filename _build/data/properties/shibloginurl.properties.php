@@ -12,7 +12,7 @@ $properties = array(
         'desc' => 'prop_shibboleth.target_desc',
         'type' => 'textfield',
         'options' => '',
-        'value' => null,
+        'value' => '',
         'lexicon' => 'shibboleth:properties',
     )
 );
