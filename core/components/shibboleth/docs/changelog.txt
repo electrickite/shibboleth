@@ -1,5 +1,10 @@
 Changelog for Shibboleth
 
+Shibboleth 1.0.1
+---------------------------------
+ * Respond to OnLoadWebDocument event in plugin
+
+
 Shibboleth 1.0.0
 ---------------------------------
  * Move authentication check earlier in resource load sequence

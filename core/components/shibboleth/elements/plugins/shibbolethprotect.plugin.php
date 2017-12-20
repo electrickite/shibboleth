@@ -34,7 +34,7 @@ if ($event == 'OnHandleRequest') {
     }
 }
 
-elseif ($event == 'OnWebPagePrerender' && (bool)$modx->resource->getTVValue($tv)) {
+elseif ($event == 'OnLoadWebDocument' && (bool)$modx->resource->getTVValue($tv)) {
     // Protect selected resources with Shibboleth authentication    
     if ( ! $modx->shibHandler->shibUser()->isAuthenticated()) {
         // If the user is not authenticated, send them to the login service
