@@ -1,5 +1,10 @@
 Changelog for Shibboleth
 
+Shibboleth 1.0.3
+---------------------------------
+ * Make class files lowercase to avoid file system inconsistencies
+
+
 Shibboleth 1.0.2
 ---------------------------------
  * Remove unneeded events from plugin on upgrade
