@@ -1,5 +1,10 @@
 Changelog for Shibboleth
 
+Shibboleth 1.0.4
+---------------------------------
+ * Prevent constant writes to the shib_rules cache when rules are empty
+
+
 Shibboleth 1.0.3
 ---------------------------------
  * Make class files lowercase to avoid file system inconsistencies

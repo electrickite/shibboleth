@@ -13,7 +13,7 @@ set_time_limit(0);
 /* define package names */
 define('PKG_NAME', 'Shibboleth');
 define('PKG_NAME_LOWER', 'shibboleth');
-define('PKG_VERSION', '1.0.3');
+define('PKG_VERSION', '1.0.4');
 define('PKG_RELEASE', 'pl');
 
 /* define build paths */

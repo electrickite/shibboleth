@@ -147,7 +147,8 @@ class ShibbolethUser extends ShibbolethBase
      */
     protected function findRules()
     {
-        if (! $rules = $this->modx->cacheManager->get('shib_rules')) {
+        $rules = $this->modx->cacheManager->get('shib_rules');
+        if ($rules === null) {
 
             // If we don't have rules in the cache, grab them from either an option or a file
             $rules_file = $this->modx->getOption('shibboleth.rules_file', $this->scriptProperties);
